@@ -1,0 +1,8 @@
+from fastapi import FastAPI
+from app.api.v1.router import router as v1_router
+from app.core.middleware import AuthMiddleware
+
+app = FastAPI(title="Ecommerce API")
+app.add_middleware(AuthMiddleware)
+
+app.include_router(v1_router)

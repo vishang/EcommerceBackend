@@ -7,8 +7,8 @@ class Product(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
-    description = Column(Text(100), nullable=False)
+    description = Column(Text, nullable=False)
     
-    height = Column(Float(1000), nullable=False)
-    width = Column(Float(1000), nullable=False)
-    length = Column(Float(1000), nullable=False)
+    height = Column(Float, nullable=False)
+    width = Column(Float, nullable=False)
+    length = Column(Float, nullable=False)
