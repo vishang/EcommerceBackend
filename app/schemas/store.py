@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
+from app.schemas.address import AddressCreateRequired
 
 
 class StoreBase(BaseModel):
@@ -11,6 +12,11 @@ class StoreBase(BaseModel):
 
 class StoreCreate(StoreBase):
     pass
+
+
+class StoreCreateForOwner(BaseModel):
+    name: str
+    address: AddressCreateRequired
 
 
 class StoreRead(StoreBase):

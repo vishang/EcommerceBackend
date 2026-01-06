@@ -19,6 +19,18 @@ class AddressCreate(AddressBase):
     pass
 
 
+class AddressCreateRequired(BaseModel):
+    line1: str
+    line2: Optional[str] = None
+    suburb: str
+    city: str
+    state: str
+    country: str
+    pincode: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+
 class AddressRead(AddressBase):
     id: int
 
