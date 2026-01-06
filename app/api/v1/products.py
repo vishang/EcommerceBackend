@@ -13,7 +13,22 @@ router = APIRouter(prefix="/products")
 
 
 @router.get('/')
-def get_products(db: Session = Depends(get_db)):
+def get_products(request: Request, db: Session = Depends(get_db)):
+    user = request.state.user
+
+    if user["role"] == RETAILER:
+        user_id = user.get("id")
+        if user_id is None:
+            raise HTTPException(status_code=400, detail="Invalid user payload")
+        products = (
+            db.query(Product)
+            .join(StoreProduct, StoreProduct.product_id == Product.id)
+            .join(Store, Store.id == StoreProduct.store_id)
+            .filter(Store.owner_id == user_id)
+            .all()
+        )
+        return products
+
     products = db.query(Product).all()
     return products
 
@@ -100,7 +115,20 @@ def update_product(
         if not owner_link:
             raise HTTPException(status_code=403, detail="Access Denied")
 
-    product = db.query(Product).filter(Product.id == product_id).first()
+    if user["role"] == RETAILER:
+        user_id = user.get("id")
+        if user_id is None:
+            raise HTTPException(status_code=400, detail="Invalid user payload")
+        product = (
+            db.query(Product)
+            .join(StoreProduct, StoreProduct.product_id == Product.id)
+            .join(Store, Store.id == StoreProduct.store_id)
+            .filter(Product.id == product_id)
+            .filter(Store.owner_id == user_id)
+            .first()
+        )
+    else:
+        product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 

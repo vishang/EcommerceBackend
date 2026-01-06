@@ -7,3 +7,6 @@ def decode_token(token: str):
         return payload
     except JWTError:
         return None
+
+def create_access_token(payload: dict):
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
