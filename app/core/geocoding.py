@@ -5,6 +5,8 @@ import urllib.parse
 import urllib.request
 from typing import Optional, Tuple
 
+from app.core.config import settings
+
 
 def geocode_address(
     *,
@@ -16,23 +18,35 @@ def geocode_address(
     country: str,
     pincode: str,
 ) -> Optional[Tuple[float, float]]:
+    if not settings.GOOGLE_GEOCODING_API_KEY:
+        return None
+
     query = ", ".join(
         part
         for part in [line1, line2, suburb, city, state, country, pincode]
         if part
     )
-    params = urllib.parse.urlencode({"format": "json", "q": query})
-    url = f"https://nominatim.openstreetmap.org/search?{params}"
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "fastapi-course/1.0 (geocoding)"},
+    params = urllib.parse.urlencode(
+        {
+            "address": query,
+            "key": settings.GOOGLE_GEOCODING_API_KEY,
+        }
     )
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?{params}"
+    req = urllib.request.Request(url)
 
     with urllib.request.urlopen(req, timeout=10) as resp:
         payload = json.loads(resp.read().decode("utf-8"))
 
-    if not payload:
+    if not payload or payload.get("status") != "OK":
         return None
 
-    first = payload[0]
-    return float(first["lat"]), float(first["lon"])
+    results = payload.get("results", [])
+    if not results:
+        return None
+
+    location = results[0].get("geometry", {}).get("location", {})
+    if "lat" not in location or "lng" not in location:
+        return None
+
+    return float(location["lat"]), float(location["lng"])

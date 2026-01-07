@@ -2,12 +2,32 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.geocoding import geocode_address
-from app.constants.roles import RETAILER
+from app.constants.roles import ADMIN, RETAILER, SUPER_ADMIN
 from app.models.address import Address
 from app.models.store import Store
 from app.schemas.store import StoreCreateForOwner, StoreRead
 
 router = APIRouter(prefix="/stores")
+
+
+@router.get("/", response_model=list[StoreRead])
+def list_stores(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    user = request.state.user
+    role = user.get("role")
+
+    if role == RETAILER:
+        owner_id = user.get("id")
+        if owner_id is None:
+            raise HTTPException(status_code=400, detail="Invalid user payload")
+        return db.query(Store).filter(Store.owner_id == owner_id).all()
+
+    if role in {ADMIN, SUPER_ADMIN}:
+        return db.query(Store).all()
+
+    raise HTTPException(status_code=403, detail="Access Denied")
 
 
 @router.post("/", response_model=StoreRead, status_code=201)

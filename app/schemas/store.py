@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
-from app.schemas.address import AddressCreateRequired
+from app.schemas.address import AddressCreateRequired, AddressRead
+from app.schemas.user import UserRead
 
 
 class StoreBase(BaseModel):
@@ -22,5 +23,7 @@ class StoreCreateForOwner(BaseModel):
 class StoreRead(StoreBase):
     id: int
     create_at: datetime | None = None
+    owner: UserRead | None = None
+    address: AddressRead | None = None
 
     model_config = ConfigDict(from_attributes=True)
