@@ -6,6 +6,7 @@ from app.constants.roles import SUPER_ADMIN
 
 EMAIL="test@google.com"
 PASSWORD="Admin@123"
+MOBILE_NUMBER="0000000000"
 
 def seed_super_admin():
     db: Session = SessionLocal()
@@ -24,6 +25,7 @@ def seed_super_admin():
             first_name="Super",
             last_name="Admin",
             email=EMAIL,
+            mobile_number=MOBILE_NUMBER,
             password=PASSWORD,
             role_id=role.id
         )

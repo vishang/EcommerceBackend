@@ -16,6 +16,7 @@ from app.models.category import Category
 from app.models.store_products import StoreProduct
 from app.models.category_products import CategoryProduct
 from app.models.address import Address
+from app.models.driver_profile import DriverProfile
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

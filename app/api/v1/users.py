@@ -20,6 +20,7 @@ class RegisterRequest(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    mobile_number: str
     password: str
     type: str
 
@@ -41,6 +42,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
         first_name=payload.first_name,
         last_name=payload.last_name,
         email=payload.email,
+        mobile_number=payload.mobile_number,
         password=payload.password,
         role_id=role.id,
     )

@@ -5,6 +5,7 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    mobile_number: str
     role_id: int
 
 
